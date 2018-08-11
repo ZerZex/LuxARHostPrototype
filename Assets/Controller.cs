@@ -21,21 +21,41 @@ public class Controller : MonoBehaviour {
 			RaycastHit hit;
 
 			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, 100)) {
-			
-				if (prefab) {
-					Debug.Log ("Instantiating player...");
-					GameObject newPlayer = GameObject.Instantiate (prefab, hit.point, Quaternion.identity);
-	
-					newPlayer.GetComponent<PlayerMove>().goal = (Transform) GameObject.Find ("Target").transform;
+				GameObject newPlayer = Spawn (hit.point);
 
-					if (newPlayer.GetComponent<PlayerMove>().goal == null) {
-						Debug.LogError ("Target not found for new player");
+				if (newPlayer) {
+					// Randomise particle start colour
+					GameObject p = newPlayer.transform.Find("Player Flare").gameObject;
+
+					if (p) {
+						
+						ParticleSystem psys = p.GetComponent<ParticleSystem>();
+
+						var main = psys.main;
+						main.startColor = Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f);
+					} else {
+						Debug.LogError ("Flare object not found");
 					}
-	//				newPlayer.SetActive (true);
-				} else {
-					Debug.LogError ("Player Prefab not found");
 				}
 			}
+		}
+	}
+
+	GameObject Spawn (Vector3 spawnPos)
+	{
+		if (prefab) {
+			Debug.Log ("Instantiating player...");
+			GameObject newPlayer = GameObject.Instantiate (prefab, spawnPos, Quaternion.identity);
+
+			newPlayer.GetComponent<PlayerMove>().goal = (Transform) GameObject.Find ("Target").transform;
+
+			if (newPlayer.GetComponent<PlayerMove>().goal == null) {
+				Debug.LogError ("Target not found for new player");
+			}
+			return newPlayer;
+		} else {
+			Debug.LogError ("Player Prefab not found");
+			return null;
 		}
 	}
 }
