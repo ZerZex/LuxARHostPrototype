@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716d58a652fc30348bed852cbd866136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabName: ParticlePlayerPrefab
+  prefab: {fileID: 1262209255026400, guid: 9d52ecc2d20f10f4f90d70267db677a8, type: 2}
 --- !u!4 &434276322
 Transform:
   m_ObjectHideFlags: 0
