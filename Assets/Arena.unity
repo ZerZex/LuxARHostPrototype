@@ -161,6 +161,11 @@ Prefab:
       propertyPath: goal
       value: 
       objectReference: {fileID: 1845835157}
+    - target: {fileID: 114990109856296460, guid: 9d52ecc2d20f10f4f90d70267db677a8,
+        type: 2}
+      propertyPath: speed
+      value: 0.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d52ecc2d20f10f4f90d70267db677a8, type: 2}
   m_IsPrefabParent: 0
@@ -256,6 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716d58a652fc30348bed852cbd866136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabName: ParticlePlayerPrefab
 --- !u!4 &434276322
 Transform:
   m_ObjectHideFlags: 0
