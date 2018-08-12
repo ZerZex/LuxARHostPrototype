@@ -16,8 +16,8 @@ public class Controller : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		// If right mouse button, then spawn a new player
-		if (Input.GetMouseButtonDown (2)) {
+		// If space key hit, then spawn a new player at mouse position
+		if (Input.GetKeyDown (KeyCode.Space)) {
 			RaycastHit hit;
 
 			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, 100)) {
@@ -28,7 +28,6 @@ public class Controller : MonoBehaviour {
 					GameObject p = newPlayer.transform.Find("Player Flare").gameObject;
 
 					if (p) {
-						
 						ParticleSystem psys = p.GetComponent<ParticleSystem>();
 
 						var main = psys.main;

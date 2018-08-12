@@ -27,8 +27,8 @@ public class PlayerMove : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		// Testing - update pos with Mouse click
-		if (Input.GetMouseButtonDown(0)) {
+		// Testing - move target point 't' key
+		if (Input.GetKeyDown(KeyCode.T)) {
 			RaycastHit hit;
 
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100)) {
