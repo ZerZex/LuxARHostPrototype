@@ -16,7 +16,7 @@ public class PlayerMove : MonoBehaviour {
 		ResetMotion ();
 	}
 
-	void ResetMotion () {
+	public void ResetMotion () {
 		// Call whenever goal position changes.
 		initialLocation = transform;
 		startTime = Time.time;
@@ -26,16 +26,7 @@ public class PlayerMove : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
-		// Testing - move target point 't' key
-		if (Input.GetKeyDown(KeyCode.T)) {
-			RaycastHit hit;
-
-			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100)) {
-				goal.position = hit.point;
-				ResetMotion ();
-			}
-		}
+		// Change position based on target location
 
 		float distCovered = (Time.time - startTime) * speed;
 		float fracJourney = distCovered / journeyLength;

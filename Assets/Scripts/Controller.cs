@@ -30,9 +30,26 @@ public class Controller : MonoBehaviour {
 
 				if (newPlayer) {
 					players.Add (newPlayer);
-					Debug.Log ("Player " + players.Count + "created.");
+					Debug.Log ("Player " + players.Count + " created.");
 					// Randomise particle start colour
 					SetPlayerColour (newPlayer, Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
+				}
+			}
+		}
+
+		// Change target location if T key hit
+		if (Input.GetKeyDown(KeyCode.T)) {
+			RaycastHit hit;
+
+			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100)) {
+
+				//players.ForEach 
+				foreach (GameObject go in players) {
+					PlayerMove p = go.GetComponent<PlayerMove>(); 
+					if (p){
+						p.goal.position = hit.point;
+						p.ResetMotion ();
+					}
 				}
 			}
 		}
