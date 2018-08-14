@@ -6,11 +6,16 @@ public class Controller : MonoBehaviour {
 
 	public GameObject prefab;
 
+	// Keep hold of list of players as we create them.
+	private List<GameObject> players;
+
 	// Use this for initialization
 	void Start () {
 		if (prefab == null) {
 			Debug.LogError ("Prefab not found.");
 		}
+
+		players = new List<GameObject>();
 	}
 	
 	// Update is called once per frame
@@ -24,6 +29,8 @@ public class Controller : MonoBehaviour {
 				GameObject newPlayer = Spawn (hit.point);
 
 				if (newPlayer) {
+					players.Add (newPlayer);
+					Debug.Log ("Player " + players.Count + "created.");
 					// Randomise particle start colour
 					SetPlayerColour (newPlayer, Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
 				}
