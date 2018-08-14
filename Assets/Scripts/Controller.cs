@@ -25,16 +25,7 @@ public class Controller : MonoBehaviour {
 
 				if (newPlayer) {
 					// Randomise particle start colour
-					GameObject p = newPlayer.transform.Find("Player Flare").gameObject;
-
-					if (p) {
-						ParticleSystem psys = p.GetComponent<ParticleSystem>();
-
-						var main = psys.main;
-						main.startColor = Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f);
-					} else {
-						Debug.LogError ("Flare object not found");
-					}
+					SetPlayerColour (newPlayer, Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
 				}
 			}
 		}
@@ -55,6 +46,23 @@ public class Controller : MonoBehaviour {
 		} else {
 			Debug.LogError ("Player Prefab not found");
 			return null;
+		}
+	}
+
+	void SetPlayerColour (GameObject player, Color newcolour)
+	{
+		// Randomise particle start colour
+		// Note - this should be a method on the Player, ideally, since is peeking inside the
+		//        prefab, and thus is poor encapsulation. - TODO: refactor
+		GameObject p = player.transform.Find("Player Flare").gameObject;
+
+		if (p) {
+			ParticleSystem psys = p.GetComponent<ParticleSystem>();
+
+			var main = psys.main;
+			main.startColor = newcolour;
+		} else {
+			Debug.LogError ("Unable to set colour - Flare object not found.");
 		}
 	}
 }
