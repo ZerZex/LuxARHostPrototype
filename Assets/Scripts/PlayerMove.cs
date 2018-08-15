@@ -6,6 +6,7 @@ public class PlayerMove : MonoBehaviour {
 
 	public Transform goal;
 	public float speed = 1.0f;   // units per second
+	public bool moveToGoal = false; // Navigation mode. If false, position is updated directly.
 
 	private Transform initialLocation;
 	private float startTime;  // Time when movement started
@@ -28,10 +29,12 @@ public class PlayerMove : MonoBehaviour {
 	void Update () {
 		// Change position based on target location
 
-		float distCovered = (Time.time - startTime) * speed;
-		float fracJourney = distCovered / journeyLength;
+		if (moveToGoal) {
+			float distCovered = (Time.time - startTime) * speed;
+			float fracJourney = distCovered / journeyLength;
 
-		transform.position = Vector3.Lerp (initialLocation.position, goal.position, fracJourney);
+			transform.position = Vector3.Lerp (initialLocation.position, goal.position, fracJourney);
+		}
 	}
 
 	public void SetColour (Color newcolour)
