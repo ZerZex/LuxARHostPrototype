@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+class Player
+{
+	public int ID { get ; set; }
+	public GameObject avatar { get; set; }
+}
+
 public class Controller : MonoBehaviour {
 
 	public GameObject prefab;
 
 	// Keep hold of list of players as we create them.
-	private List<GameObject> players;
+	private List<Player> players;
+	private int nextID = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -15,7 +22,7 @@ public class Controller : MonoBehaviour {
 			Debug.LogError ("Prefab not found.");
 		}
 
-		players = new List<GameObject>();
+		players = new List<Player>();
 	}
 	
 	// Update is called once per frame
@@ -26,13 +33,15 @@ public class Controller : MonoBehaviour {
 			RaycastHit hit;
 
 			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, 100)) {
-				GameObject newPlayer = Spawn (hit.point);
+				Player newPlayer = new Player ();
+				newPlayer.ID = nextID++;
+				newPlayer.avatar = Spawn (hit.point);
 
-				if (newPlayer) {
+				if (newPlayer.avatar) {
 					players.Add (newPlayer);
-					Debug.Log ("Player " + players.Count + " created.");
+					Debug.Log ("Player " + newPlayer.ID + " created.");
 					// Randomise particle start colour
-					newPlayer.GetComponent<PlayerMove>().SetColour (Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
+					newPlayer.avatar.GetComponent<PlayerMove>().SetColour (Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
 				}
 			}
 		}
@@ -44,8 +53,8 @@ public class Controller : MonoBehaviour {
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100)) {
 
 				//players.ForEach 
-				foreach (GameObject go in players) {
-					PlayerMove p = go.GetComponent<PlayerMove>(); 
+				foreach (Player x in players) {
+					PlayerMove p = x.avatar.GetComponent<PlayerMove>(); 
 					if (p){
 						p.goal.position = hit.point;
 						p.ResetMotion ();
