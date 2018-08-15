@@ -33,4 +33,19 @@ public class PlayerMove : MonoBehaviour {
 
 		transform.position = Vector3.Lerp (initialLocation.position, goal.position, fracJourney);
 	}
+
+	public void SetColour (Color newcolour)
+	{
+		// Sets particle start colour
+		GameObject p = this.transform.Find("Player Flare").gameObject;
+
+		if (p) {
+			ParticleSystem psys = p.GetComponent<ParticleSystem>();
+
+			var main = psys.main;
+			main.startColor = newcolour;
+		} else {
+			Debug.LogError ("Unable to set colour - Flare object not found.");
+		}
+	}
 }
