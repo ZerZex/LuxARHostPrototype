@@ -15,9 +15,14 @@ class Player
 
 	public Player () {
 		// Generate a path
-		float radius = 20f;
+		float radius = (Random.value * 15f) + 5f;  // random radius
 		float theta = 0f;
 		float thetadelta = (Mathf.PI * 2f) / (float) NPTS;
+
+		// Randomise direction
+		if (Random.value > 0.5f) {
+			thetadelta *= -1f;
+		}
 		for (int i = 0; i < NPTS; i++, theta += thetadelta) {
 			tpath [i].x = radius * Mathf.Sin (theta);
 			tpath [i].z = radius * Mathf.Cos (theta);
