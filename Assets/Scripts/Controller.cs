@@ -24,6 +24,15 @@ class Player
 		}
 	}
 
+	// Sets origin for path vector (just for testing variety)
+	public void SetOrigin (Vector3 origin)
+	{
+		for (int i = 0; i < NPTS; i++) {
+			tpath [i] += origin;
+		}
+	}
+
+	// Move avatar to next stored position, wrapping to first if needed.
 	public void UpdatePosition () {
 		avatar.transform.position = tpath[nextPos++];
 		if (nextPos == NPTS) {
@@ -66,6 +75,7 @@ public class Controller : MonoBehaviour {
 				Player newPlayer = new Player ();
 				newPlayer.ID = nextID++;
 				newPlayer.avatar = Spawn (hit.point);
+				newPlayer.SetOrigin (hit.point);
 
 				if (newPlayer.avatar) {
 					players.Add (newPlayer);
