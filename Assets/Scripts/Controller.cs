@@ -6,7 +6,32 @@ class Player
 {
 	public int ID { get ; set; }
 	public GameObject avatar { get; set; }
+
+	// Temp - array of positions we can to drive this object
+	public const int NPTS = 100;
+	public Vector3[] tpath = new Vector3[NPTS];
+
+	private int nextPos = 0;
+
+	public Player () {
+		// Generate a path
+		float radius = 20f;
+		float theta = 0f;
+		float thetadelta = (Mathf.PI * 2f) / (float) NPTS;
+		for (int i = 0; i < NPTS; i++, theta += thetadelta) {
+			tpath [i].x = radius * Mathf.Sin (theta);
+			tpath [i].z = radius * Mathf.Cos (theta);
+		}
+	}
+
+	public void UpdatePosition () {
+		avatar.transform.position = tpath[nextPos++];
+		if (nextPos == NPTS) {
+			nextPos = 0;
+		}
+	}
 }
+	
 
 public class Controller : MonoBehaviour {
 
@@ -27,6 +52,11 @@ public class Controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		// Move all the players
+		foreach (Player p in players) {
+			p.UpdatePosition ();
+		}
 
 		// If space key hit, then spawn a new player at mouse position
 		if (Input.GetKeyDown (KeyCode.Space)) {
