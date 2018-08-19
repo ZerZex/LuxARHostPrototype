@@ -8,9 +8,10 @@ class Player
 	public GameObject avatar { get; set; }
 
 	// Temp - array of positions we can to drive this object
-	public const int NPTS = 100;
-	public Vector3[] tpath = new Vector3[NPTS];
-
+	private const int NPTS = 100;
+	private Vector3[] tpath = new Vector3[NPTS];
+	private float[] timestamps = new float[NPTS];
+	private float totaltime = 0f;
 	private int nextPos = 0;
 
 	public Player () {
@@ -27,6 +28,12 @@ class Player
 			tpath [i].x = radius * Mathf.Sin (theta);
 			tpath [i].z = radius * Mathf.Cos (theta);
 		}
+		timestamps [0] = 0f;
+		for (int i = 1; i < NPTS; i++) {
+			// randomise a time for each position.
+			timestamps [i] = timestamps [i-1] + (Random.value * 0.1f); // random moves between 0 and 2 seconds
+		}
+		totaltime = timestamps [NPTS-1];
 	}
 
 	// Sets origin for path vector (just for testing variety)
@@ -39,10 +46,19 @@ class Player
 
 	// Move avatar to next stored position, wrapping to first if needed.
 	public void UpdatePosition () {
-		avatar.transform.position = tpath[nextPos++];
+
+		float timeMod = Time.realtimeSinceStartup % totaltime;
+		int i = 0;
+
+		while (timestamps [i] < timeMod) {
+			i++;
+		}
+		 
+		nextPos = i;
 		if (nextPos == NPTS) {
 			nextPos = 0;
 		}
+		avatar.transform.position = tpath[nextPos++];
 	}
 }
 	
@@ -60,7 +76,6 @@ public class Controller : MonoBehaviour {
 		if (prefab == null) {
 			Debug.LogError ("Prefab not found.");
 		}
-
 		players = new List<Player>();
 	}
 	
