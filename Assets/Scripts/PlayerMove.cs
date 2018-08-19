@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class PlayerMove : MonoBehaviour {
+public class PlayerMove : NetworkBehaviour {
 
 	public Transform goal;
 	public float speed = 1.0f;   // units per second
@@ -29,12 +30,16 @@ public class PlayerMove : MonoBehaviour {
 	void Update () {
 		// Change position based on target location
 
-		if (moveToGoal) {
-			float distCovered = (Time.time - startTime) * speed;
-			float fracJourney = distCovered / journeyLength;
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
-			transform.position = Vector3.Lerp (initialLocation.position, goal.position, fracJourney);
-		}
+        var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
+        var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
+
+        transform.Rotate(0, x, 0);
+        transform.Translate(0, 0, z);
 	}
 
 	public void SetColour (Color newcolour)
