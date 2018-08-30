@@ -42,7 +42,14 @@ public class PlayerMove : NetworkBehaviour {
         transform.Translate(0, 0, z);
 	}
 
-	public void SetColour (Color newcolour)
+    public override void OnStartLocalPlayer()
+    {
+        //base.OnStartLocalPlayer();
+        SetColour(Color.blue);
+
+    }
+
+    public void SetColour (Color newcolour)
 	{
 		// Sets particle start colour
 		GameObject p = this.transform.Find("Player Flare").gameObject;
