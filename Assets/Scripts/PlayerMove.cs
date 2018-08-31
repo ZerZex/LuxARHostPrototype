@@ -5,9 +5,9 @@ using UnityEngine.Networking;
 
 public class PlayerMove : NetworkBehaviour {
 
-	public Transform goal;
 	public float speed = 1.0f;   // units per second
-	public bool moveToGoal = false; // Navigation mode. If false, position is updated directly.
+	public GameObject bulletPrefab;
+	public Transform bulletSpawn;
 
 	private Transform initialLocation;
 	private float startTime;  // Time when movement started
@@ -20,9 +20,7 @@ public class PlayerMove : NetworkBehaviour {
 
 	public void ResetMotion () {
 		// Call whenever goal position changes.
-		initialLocation = transform;
 		startTime = Time.time;
-		journeyLength = Vector3.Distance (initialLocation.position, goal.position);	
 	}
 
 
@@ -40,16 +38,20 @@ public class PlayerMove : NetworkBehaviour {
 
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
+
+				if (Input.GetKeyDown(KeyCode.Space))
+				{
+					Fire();
+				}
 	}
 
-    public override void OnStartLocalPlayer()
-    {
+  public override void OnStartLocalPlayer()
+  {
         //base.OnStartLocalPlayer();
         SetColour(Color.blue);
+	}
 
-    }
-
-    public void SetColour (Color newcolour)
+  public void SetColour (Color newcolour)
 	{
 		// Sets particle start colour
 		GameObject p = this.transform.Find("Player Flare").gameObject;
@@ -62,5 +64,17 @@ public class PlayerMove : NetworkBehaviour {
 		} else {
 			Debug.LogError ("Unable to set colour - Flare object not found.");
 		}
+	}
+
+	void Fire ()
+	{
+		// Create the bullet from the Bullet Prefab
+		var bullet = (GameObject)Instantiate (bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+
+		// Add some velocity
+		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+
+		// Destroy after 2 seconds
+		Destroy(bullet, 2.0f);
 	}
 }

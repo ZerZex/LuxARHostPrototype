@@ -45,7 +45,7 @@ class Player
 		}
 	}
 }
-	
+
 
 public class Controller : MonoBehaviour {
 
@@ -63,7 +63,7 @@ public class Controller : MonoBehaviour {
 
 		players = new List<Player>();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 
@@ -97,11 +97,11 @@ public class Controller : MonoBehaviour {
 
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100)) {
 
-				//players.ForEach 
+				//players.ForEach
 				foreach (Player x in players) {
-					PlayerMove p = x.avatar.GetComponent<PlayerMove>(); 
+					PlayerMove p = x.avatar.GetComponent<PlayerMove>();
 					if (p){
-						p.goal.position = hit.point;
+//						p.goal.position = hit.point;
 						p.ResetMotion ();
 					}
 				}
@@ -115,11 +115,11 @@ public class Controller : MonoBehaviour {
 			Debug.Log ("Instantiating player...");
 			GameObject newPlayer = GameObject.Instantiate (prefab, spawnPos, Quaternion.identity);
 
-			newPlayer.GetComponent<PlayerMove>().goal = (Transform) GameObject.Find ("Target").transform;
+//			newPlayer.GetComponent<PlayerMove>().goal = (Transform) GameObject.Find ("Target").transform;
 
-			if (newPlayer.GetComponent<PlayerMove>().goal == null) {
+//			if (newPlayer.GetComponent<PlayerMove>().goal == null) {
 				Debug.LogError ("Target not found for new player");
-			}
+//			}
 			return newPlayer;
 		} else {
 			Debug.LogError ("Player Prefab not found");
