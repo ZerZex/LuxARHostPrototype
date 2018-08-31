@@ -41,7 +41,7 @@ public class PlayerMove : NetworkBehaviour {
 
 				if (Input.GetKeyDown(KeyCode.Space))
 				{
-					Fire();
+					CmdFire();
 				}
 	}
 
@@ -66,13 +66,17 @@ public class PlayerMove : NetworkBehaviour {
 		}
 	}
 
-	void Fire ()
+    [Command]
+	void CmdFire ()
 	{
 		// Create the bullet from the Bullet Prefab
 		var bullet = (GameObject)Instantiate (bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
 
 		// Add some velocity
 		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+
+        // Spawn the bullet on the clients
+        NetworkServer.Spawn(bullet);
 
 		// Destroy after 2 seconds
 		Destroy(bullet, 2.0f);
