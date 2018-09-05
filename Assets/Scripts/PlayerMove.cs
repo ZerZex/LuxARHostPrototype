@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class PlayerMove : NetworkBehaviour {
 
-	public float speed = 1.0f;   // units per second
+	public float speed = 3.0f;   // units per second
 	public GameObject bulletPrefab;
 	public Transform bulletSpawn;
 
@@ -34,7 +34,7 @@ public class PlayerMove : NetworkBehaviour {
         }
 
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
-        var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
+        var z = Input.GetAxis("Vertical") * Time.deltaTime * speed;
 
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
