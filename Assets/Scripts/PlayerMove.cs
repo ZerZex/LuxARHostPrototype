@@ -33,16 +33,41 @@ public class PlayerMove : NetworkBehaviour {
             return;
         }
 
-        var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
-        var z = Input.GetAxis("Vertical") * Time.deltaTime * speed;
+        if (Application.isMobilePlatform)
+        {
+            // Process mobile device input mechanism
+            Vector3 dir = Vector3.zero;
 
-        transform.Rotate(0, x, 0);
-        transform.Translate(0, 0, z);
+            // Assume device held parallel to ground and home button to right
 
-				if (Input.GetKeyDown(KeyCode.Space))
-				{
-					CmdFire();
-				}
+            // Remamp device acceleration axis to game coordinates:
+            // 1. XY plane of device mapped onto XZ plane
+            // 2. rotated 90 degrees around Y axis
+            dir.x = -Input.acceleration.y;
+            dir.z = Input.acceleration.x;
+
+            // clamp accel vector to unit
+            if (dir.sqrMagnitude > 1){
+                dir.Normalize();
+            }
+            dir *= Time.deltaTime;
+            transform.Translate(dir * speed);
+
+        }
+        else
+        {
+            // Use keyboard/mouse for computers
+            var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
+            var z = Input.GetAxis("Vertical") * Time.deltaTime * speed;
+
+            transform.Rotate(0, x, 0);
+            transform.Translate(0, 0, z);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                CmdFire();
+            }
+        }
 	}
 
   public override void OnStartLocalPlayer()
