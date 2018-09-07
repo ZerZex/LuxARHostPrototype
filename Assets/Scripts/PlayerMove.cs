@@ -10,22 +10,35 @@ public class PlayerMove : NetworkBehaviour {
 	public Transform bulletSpawn;
 
 	private Transform initialLocation;
-	private float startTime;  // Time when movement started
 	private float journeyLength;
 
 	// Use this for initialization
 	void Start () {
 		ResetMotion ();
+
+        // Might not be the best place to do this, but OK for now.
+        Input.location.Start();
+        if (Input.location.status == LocationServiceStatus.Failed) {
+            Debug.Log("Unable to start GPS tracker");
+        }
 	}
 
 	public void ResetMotion () {
 		// Call whenever goal position changes.
-		startTime = Time.time;
+
 	}
 
+    private void OnDestroy()
+    {
+        if (Input.location.isEnabledByUser) {
+            Input.location.Stop();
+            Debug.Log("GPS Stopped");
+        }
+    }
 
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
 		// Change position based on target location
 
         if (!isLocalPlayer)
@@ -47,11 +60,12 @@ public class PlayerMove : NetworkBehaviour {
             dir.z = Input.acceleration.x;
 
             // clamp accel vector to unit
-            if (dir.sqrMagnitude > 1){
+            if (dir.sqrMagnitude > 1) {
                 dir.Normalize();
             }
             dir *= Time.deltaTime;
             transform.Translate(dir * speed);
+
 
         }
         else
@@ -70,7 +84,26 @@ public class PlayerMove : NetworkBehaviour {
         }
 	}
 
-  public override void OnStartLocalPlayer()
+    private void OnGUI()
+    {
+        // Let's grab some GPS coordinates and dump them out
+        if (Input.location.status == LocationServiceStatus.Running)
+        {
+            string text = string.Format("GPS: {0}, {1}",
+                                        Input.location.lastData.latitude,
+                                        Input.location.lastData.longitude);
+
+            GUI.Label(new Rect(10, 100, 100, 20), text);
+            Debug.Log(text);
+        }
+        else
+        {
+            string text = string.Format("GPS Status={0}", Input.location.status.ToString());
+            GUI.Label(new Rect(10, 200, 300, 40), text);
+        }
+    }
+
+    public override void OnStartLocalPlayer()
   {
         //base.OnStartLocalPlayer();
         SetColour(Color.blue);
