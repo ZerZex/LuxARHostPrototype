@@ -86,7 +86,7 @@ public class Controller : MonoBehaviour {
 					players.Add (newPlayer);
 					Debug.Log ("Player " + newPlayer.ID + " created.");
 					// Randomise particle start colour
-					newPlayer.avatar.GetComponent<PlayerMove>().SetColour (Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
+					newPlayer.avatar.GetComponent<PlayerMove>().SetColor (Random.ColorHSV (0f, 1f, 1f, 1f, 0.5f, 1f));
 				}
 			}
 		}

@@ -21,7 +21,8 @@ public class PlayerMove : NetworkBehaviour {
 		ResetMotion ();
 
         // Might not be the best place to do this, but OK for now.
-        Input.location.Start();
+        Input.location.Start(5, 2);   // Need best accuracy.
+
         if (Input.location.status == LocationServiceStatus.Failed) {
             Debug.Log("Unable to start GPS tracker");
         }
@@ -68,7 +69,7 @@ public class PlayerMove : NetworkBehaviour {
         {
             if (moveByGPS)
             {
-                // GPS drives position of plater
+                // GPS drives position of player
                 if (arena != null)
                 {
                     Vector3 worldpos = arena.GPStoArenaCoordinates(Input.location.lastData.latitude,
@@ -77,15 +78,16 @@ public class PlayerMove : NetworkBehaviour {
                     // not in order to test out the GPS to Game coordinate mapping
                     if (arena.IsInsideArena(worldpos))
                     {
-                        SetColour(Color.green);
+                        SetColor(Color.cyan);
                     }
                     else
                     {
-                        SetColour(Color.red);
+                        SetColor(Color.red);
                     }
-                    // Set position to GPS one.
+                    // Set position to mapped GPS location
                     // TODO: probably need some interpolation
                     transform.position = worldpos;
+                    
                 }
             }
             else
@@ -109,7 +111,6 @@ public class PlayerMove : NetworkBehaviour {
                 dir *= Time.deltaTime;
                 transform.Translate(dir * speed);
             }
-
         }
         else
         {
@@ -172,12 +173,12 @@ public class PlayerMove : NetworkBehaviour {
     }
 
     public override void OnStartLocalPlayer()
-  {
+    {
         //base.OnStartLocalPlayer();
-        SetColour(Color.blue);
+        SetColor(Color.blue);
 	}
 
-  public void SetColour (Color newcolour)
+    public void SetColor (Color newcolor)
 	{
 		// Sets particle start colour
 		GameObject p = this.transform.Find("Player Flare").gameObject;
@@ -186,7 +187,7 @@ public class PlayerMove : NetworkBehaviour {
 			ParticleSystem psys = p.GetComponent<ParticleSystem>();
 
 			var main = psys.main;
-			main.startColor = newcolour;
+			main.startColor = newcolor;
 		} else {
 			Debug.LogError ("Unable to set colour - Flare object not found.");
 		}
