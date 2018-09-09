@@ -19,13 +19,16 @@ public class ArenaMapper : NetworkBehaviour {
 		// Need to get bounding box of Arena geometry, and map
 		// to the GPS coodinates
 
-		latitudeSize = Mathf.Abs (corner1.x - corner0.x);
-		longitudeSize = Mathf.Abs (corner1.y - corner0.y);
+		latitudeSize  = corner1.x - corner0.x;
+		longitudeSize = corner1.y - corner0.y;
 
 		Renderer rend = GetComponent<Renderer> ();
-		geometryBounds = rend.bounds;
+        // Always playing on flat plane, so set y region as +/- 1
+        geometryBounds = rend.bounds;
+        geometryBounds.SetMinMax(new Vector3(rend.bounds.min.x, -1.0f, rend.bounds.min.z),
+                                 new Vector3(rend.bounds.max.x,  1.0f, rend.bounds.max.z));
 
-		Debug.Log (string.Format ("Gmin = {0}, {1}, {2}", geometryBounds.min.x, geometryBounds.min.y, geometryBounds.min.z));
+        Debug.Log (string.Format ("Gmin = {0}, {1}, {2}", geometryBounds.min.x, geometryBounds.min.y, geometryBounds.min.z));
 		Debug.Log (string.Format ("Gmax = {0}, {1}, {2}", geometryBounds.max.x, geometryBounds.max.y, geometryBounds.max.z));
 		Debug.Log (string.Format ("GPS size = {0}, {1}", latitudeSize, longitudeSize));
 	}
@@ -41,4 +44,10 @@ public class ArenaMapper : NetworkBehaviour {
 
 		return new Vector3 (x, 0, z);
 	}
+
+    public bool IsInsideArena (Vector3 pos)
+    {
+        // Returns true if supplied position is inside the arena bounds
+        return geometryBounds.Contains(pos);
+    }
 }

@@ -12,8 +12,10 @@ public class PlayerMove : NetworkBehaviour {
 	private Transform initialLocation;
 	private float journeyLength;
 
-	// Use this for initialization
-	void Start () {
+    private ArenaMapper arena = null;
+
+    // Use this for initialization
+    void Start () {
 		ResetMotion ();
 
         // Might not be the best place to do this, but OK for now.
@@ -21,7 +23,21 @@ public class PlayerMove : NetworkBehaviour {
         if (Input.location.status == LocationServiceStatus.Failed) {
             Debug.Log("Unable to start GPS tracker");
         }
-	}
+
+        GameObject temp = GameObject.Find("Arena");
+        if (temp == null)
+        {
+            Debug.LogError("Arena object not found");
+            return;
+        }
+        arena = temp.GetComponent<ArenaMapper>();
+
+        if (arena == null)
+        {
+            Debug.LogError("Unable to locate ArenaMapper component of Arena");
+            return;
+        }
+    }
 
 	public void ResetMotion () {
 		// Call whenever goal position changes.
@@ -60,13 +76,29 @@ public class PlayerMove : NetworkBehaviour {
             dir.z = Input.acceleration.x;
 
             // clamp accel vector to unit
-            if (dir.sqrMagnitude > 1) {
+            if (dir.sqrMagnitude > 1)
+            {
                 dir.Normalize();
             }
             dir *= Time.deltaTime;
             transform.Translate(dir * speed);
 
-
+            if (arena != null)
+            {
+                Vector3 worldpos = arena.GPStoArenaCoordinates(Input.location.lastData.latitude,
+                                                               Input.location.lastData.longitude);
+                // Temp - colour the player based on whether inside the arena or
+                // not in order to test out the GPS to Game coordinate mapping
+                if (arena.IsInsideArena(worldpos))
+                {
+                    SetColour(Color.green);
+                }
+                else
+                {
+                    SetColour(Color.red);
+                }
+                transform.position = worldpos; 
+            }
         }
         else
         {
@@ -93,13 +125,34 @@ public class PlayerMove : NetworkBehaviour {
                                         Input.location.lastData.latitude,
                                         Input.location.lastData.longitude);
 
-            GUI.Label(new Rect(10, 100, 100, 20), text);
+            GUI.Label(new Rect(10, 200, 400, 60), text);
             Debug.Log(text);
+
+            if (arena != null)
+            {
+                Vector3 worldpos = arena.GPStoArenaCoordinates(Input.location.lastData.latitude,
+                                                               Input.location.lastData.longitude);
+
+                text = string.Format("WLD: {0}, {1}", worldpos.x, worldpos.z);
+                GUI.Label(new Rect(10, 200, 400, 60), text);
+                Debug.Log(text);
+
+                if (arena.IsInsideArena(worldpos))
+                {
+                    GUI.backgroundColor = Color.green;
+                    GUI.Label(new Rect(10, 300, 400, 60), "Inside Arena");
+                }
+                else
+                {
+                    GUI.backgroundColor = Color.red;
+                    GUI.Label(new Rect(10, 300, 400, 60), "Outside Arena!");
+                }
+            }
         }
         else
         {
             string text = string.Format("GPS Status={0}", Input.location.status.ToString());
-            GUI.Label(new Rect(10, 200, 300, 40), text);
+            GUI.Label(new Rect(10, 200, 400, 60), text);
         }
     }
 
