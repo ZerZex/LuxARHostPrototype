@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 public class PlayerMove : NetworkBehaviour {
 
 	public float speed = 3.0f;   // units per second
+    public bool moveByGPS = true;  // True of GPS drives position, else use input
+    public bool showDebug = false;
 	public GameObject bulletPrefab;
 	public Transform bulletSpawn;
 
@@ -64,41 +66,50 @@ public class PlayerMove : NetworkBehaviour {
 
         if (Application.isMobilePlatform)
         {
-            // Process mobile device input mechanism
-            Vector3 dir = Vector3.zero;
-
-            // Assume device held parallel to ground and home button to right
-
-            // Remamp device acceleration axis to game coordinates:
-            // 1. XY plane of device mapped onto XZ plane
-            // 2. rotated 90 degrees around Y axis
-            dir.x = -Input.acceleration.y;
-            dir.z = Input.acceleration.x;
-
-            // clamp accel vector to unit
-            if (dir.sqrMagnitude > 1)
+            if (moveByGPS)
             {
-                dir.Normalize();
+                // GPS drives position of plater
+                if (arena != null)
+                {
+                    Vector3 worldpos = arena.GPStoArenaCoordinates(Input.location.lastData.latitude,
+                                                                   Input.location.lastData.longitude);
+                    // Temp - colour the player based on whether inside the arena or
+                    // not in order to test out the GPS to Game coordinate mapping
+                    if (arena.IsInsideArena(worldpos))
+                    {
+                        SetColour(Color.green);
+                    }
+                    else
+                    {
+                        SetColour(Color.red);
+                    }
+                    // Set position to GPS one.
+                    // TODO: probably need some interpolation
+                    transform.position = worldpos;
+                }
             }
-            dir *= Time.deltaTime;
-            transform.Translate(dir * speed);
-
-            if (arena != null)
+            else
             {
-                Vector3 worldpos = arena.GPStoArenaCoordinates(Input.location.lastData.latitude,
-                                                               Input.location.lastData.longitude);
-                // Temp - colour the player based on whether inside the arena or
-                // not in order to test out the GPS to Game coordinate mapping
-                if (arena.IsInsideArena(worldpos))
+                // Process mobile device input mechanism
+                Vector3 dir = Vector3.zero;
+
+                // Assume device held parallel to ground and home button to right
+
+                // Remamp device acceleration axis to game coordinates:
+                // 1. XY plane of device mapped onto XZ plane
+                // 2. rotated 90 degrees around Y axis
+                dir.x = -Input.acceleration.y;
+                dir.z = Input.acceleration.x;
+
+                // clamp accel vector to unit
+                if (dir.sqrMagnitude > 1)
                 {
-                    SetColour(Color.green);
+                    dir.Normalize();
                 }
-                else
-                {
-                    SetColour(Color.red);
-                }
-                transform.position = worldpos; 
+                dir *= Time.deltaTime;
+                transform.Translate(dir * speed);
             }
+
         }
         else
         {
@@ -118,6 +129,10 @@ public class PlayerMove : NetworkBehaviour {
 
     private void OnGUI()
     {
+        if (!showDebug)
+        {
+            return;
+        }
         // Let's grab some GPS coordinates and dump them out
         if (Input.location.status == LocationServiceStatus.Running)
         {
