@@ -213,8 +213,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4457813de1b21ad4bb8f5a0df5ac4c8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  corner0: {x: -41.2876, y: 174.7791}
-  corner1: {x: -41.2879, y: 174.7787}
+  corner0: {x: -41.287483, y: 174.77917}
+  corner1: {x: -41.287872, y: 174.77864}
 --- !u!114 &1132490361
 MonoBehaviour:
   m_ObjectHideFlags: 0
