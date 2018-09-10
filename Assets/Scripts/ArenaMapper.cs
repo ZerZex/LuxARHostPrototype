@@ -39,6 +39,14 @@ public class ArenaMapper : NetworkBehaviour {
 		float x;
 		float z;
 
+		// Note: This is only a rough approximation with the following issues:
+		//   1. Assumes lat/long box is same aspect ratio as arena geometry mesh
+		//   2. Assumes 1 degree of latitude is the same number of meters on the ground as
+		//      1 degree of longitude.
+		// But is OK for initial demo purposes is we ensure that the lat/long box limits are
+		// more or less square.
+		// Once we've proved the rest of the mechansim, we can look at more exact maths - I
+		// have some notes on OneNote.
 		x = ((latitude - corner0.x) * (geometryBounds.size.x / latitudeSize)) + geometryBounds.min.x;
 		z = ((longitude - corner0.y) * (geometryBounds.size.z / longitudeSize)) + geometryBounds.min.z;
 
