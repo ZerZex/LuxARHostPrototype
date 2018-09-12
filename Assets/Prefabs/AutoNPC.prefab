@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 114114973418066282}
   - component: {fileID: 114974451205680596}
   - component: {fileID: 114645732852559782}
+  - component: {fileID: 114862523202060340}
   m_Layer: 0
   m_Name: AutoNPC
   m_TagString: Untagged
@@ -431,7 +432,7 @@ MonoBehaviour:
     i14: 227
     i15: 225
   m_ServerOnly: 0
-  m_LocalPlayerAuthority: 1
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114169749655847410
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -515,6 +516,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114862523202060340
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1409950442360016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c94fbd18c61dd7d4d8a965898f2634e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114871845372453558
 MonoBehaviour:
   m_ObjectHideFlags: 1
