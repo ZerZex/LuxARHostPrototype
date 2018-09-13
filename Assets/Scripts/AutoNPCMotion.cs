@@ -7,18 +7,29 @@ using UnityEngine.Networking;
 // characters
 public class AutoNPCMotion : NetworkBehaviour {
 
-	[SyncVar(hook="OnChangeColor")]
-	public Color color = Color.green;
+	[SyncVar(hook="OnChangeParticleColor")]
+	public Color particleColor = Color.green;
 
-	// Temp info for random walk
-	private float howFarToMove = 0.0f;
+    [SyncVar(hook = "OnChangeTrailColor")]
+    public Color trailColor = Color.yellow;
+
+    // Temp info for random walk
+    private float howFarToMove = 0.0f;
 	private Vector3 targetPos;
 	private float startTime;
 	private float speed = 4.0f;
 	private Vector3 startPos;
 
+    //private Color[] colors = {Color.red, Color.green, Color.}
+
 	void Start () {
-		color = Random.ColorHSV ();
+        // Generate a bright color
+        particleColor = Color.HSVToRGB(Random.Range(0.0f, 1.0f),
+                                       Random.Range(0.0f, 1.0f),
+                                       Random.Range(0.5f, 1.0f));
+                                       
+        trailColor = particleColor;
+        trailColor.a = 1.0f;   // Solid trails only
 		ResetMotion ();
 	}
 		
@@ -57,15 +68,15 @@ public class AutoNPCMotion : NetworkBehaviour {
 		}
 	}
 
-	void OnChangeColor (Color newcolor) {
-		color = newcolor;
-		SetComponentColor ("Player Flare", color);
+	void OnChangeParticleColor (Color newcolor) {
+		particleColor = newcolor;
+        SetParticleColor(particleColor);
 	}
 
-	public void SetComponentColor (string component, Color newcolor)
+	public void SetParticleColor (Color newcolor)
 	{
 		// Sets particle start colour
-		GameObject p = this.transform.Find(component).gameObject;
+		GameObject p = this.transform.Find("Player Flare").gameObject;
 
 		if (p) {
 			ParticleSystem psys = p.GetComponent<ParticleSystem>();
@@ -73,7 +84,31 @@ public class AutoNPCMotion : NetworkBehaviour {
 			var main = psys.main;
 			main.startColor = newcolor;
 		} else {
-			Debug.LogError (string.Format("Unable to set colour - {0} object not found.", component));
+			Debug.LogError (string.Format("Unable to set colour - object not found."));
 		}
 	}
+
+    void OnChangeTrailColor(Color newcolor)
+    {
+        trailColor = newcolor;
+        SetTrailColor(trailColor);
+    }
+
+    public void SetTrailColor(Color newcolor)
+    {
+        // Sets particle start colour
+        GameObject p = this.transform.Find("Trail").gameObject;
+
+        if (p)
+        {
+            TrailRenderer trail = p.GetComponent<TrailRenderer>();
+
+            //var main = psys.main;
+            trail.startColor = newcolor;
+        }
+        else
+        {
+            Debug.LogError(string.Format("Unable to set trail colour - object not found."));
+        }
+    }
 }
