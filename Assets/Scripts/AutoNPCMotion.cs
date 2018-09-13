@@ -38,16 +38,18 @@ public class AutoNPCMotion : NetworkBehaviour {
 			return;
 		}
 
-		// Want to move in a random walk
-		float distanceSoFar = (Time.time - startTime) * speed;
-		float fractionTravelled = distanceSoFar / howFarToMove;
+		if (isServer) {
+			// Want to move in a random walk
+			float distanceSoFar = (Time.time - startTime) * speed;
+			float fractionTravelled = distanceSoFar / howFarToMove;
 
-		if (fractionTravelled <= 1.0f) {
-			transform.position = Vector3.Lerp (startPos, targetPos, fractionTravelled);
-		} else {
-			// Change direction
-			transform.Rotate (0.0f, Random.Range (-90.0f, 90.0f), 0.0f);
-			ResetMotion ();
+			if (fractionTravelled <= 1.0f) {
+				transform.position = Vector3.Lerp (startPos, targetPos, fractionTravelled);
+			} else {
+				// Change direction
+				transform.Rotate (0.0f, Random.Range (-90.0f, 90.0f), 0.0f);
+				ResetMotion ();
+			}
 		}
 	}
 }
