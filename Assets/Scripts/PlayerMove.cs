@@ -59,7 +59,6 @@ public class PlayerMove : NetworkBehaviour {
     // Update is called once per frame
     void Update () {
 		// Change position based on target location
-
         if (!isLocalPlayer)
         {
             return;
@@ -120,6 +119,13 @@ public class PlayerMove : NetworkBehaviour {
 
             transform.Rotate(0, x, 0);
             transform.Translate(0, 0, z);
+
+			if (Input.GetKeyDown(KeyCode.O)) {
+				Camera.main.fieldOfView *= 0.9f;
+			}
+			if (Input.GetKeyDown (KeyCode.P)) {
+				Camera.main.fieldOfView *= 1.1f;
+			}
 
             if (Input.GetKeyDown(KeyCode.Space))
             {

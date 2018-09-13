@@ -21,7 +21,8 @@ public class AutoNPCMotion : NetworkBehaviour {
 		
 	private void ResetMotion () {
 		
-		howFarToMove = Random.Range (3.0f, 7.0f);
+		howFarToMove = Random.Range (2.0f, 10.0f);
+		speed = Random.Range (1.0f, 7.0f);
 	
 		Vector3 dir = transform.forward * howFarToMove;
 		targetPos = transform.position + dir;
