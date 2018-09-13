@@ -7,6 +7,8 @@ using UnityEngine.Networking;
 // characters
 public class AutoNPCMotion : NetworkBehaviour {
 
+	[SyncVar(hook="OnChangeColor")]
+	public Color color = Color.green;
 
 	// Temp info for random walk
 	private float howFarToMove = 0.0f;
@@ -16,13 +18,14 @@ public class AutoNPCMotion : NetworkBehaviour {
 	private Vector3 startPos;
 
 	void Start () {
+		color = Random.ColorHSV ();
 		ResetMotion ();
 	}
 		
 	private void ResetMotion () {
 		
 		howFarToMove = Random.Range (2.0f, 10.0f);
-		speed = Random.Range (1.0f, 7.0f);
+		speed = Random.Range (1.0f, 15.0f);
 	
 		Vector3 dir = transform.forward * howFarToMove;
 		targetPos = transform.position + dir;
@@ -51,6 +54,26 @@ public class AutoNPCMotion : NetworkBehaviour {
 				transform.Rotate (0.0f, Random.Range (-90.0f, 90.0f), 0.0f);
 				ResetMotion ();
 			}
+		}
+	}
+
+	void OnChangeColor (Color newcolor) {
+		color = newcolor;
+		SetComponentColor ("Player Flare", color);
+	}
+
+	public void SetComponentColor (string component, Color newcolor)
+	{
+		// Sets particle start colour
+		GameObject p = this.transform.Find(component).gameObject;
+
+		if (p) {
+			ParticleSystem psys = p.GetComponent<ParticleSystem>();
+
+			var main = psys.main;
+			main.startColor = newcolor;
+		} else {
+			Debug.LogError (string.Format("Unable to set colour - {0} object not found.", component));
 		}
 	}
 }

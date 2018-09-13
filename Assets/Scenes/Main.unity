@@ -143,7 +143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoNPCPrefab: {fileID: 1409950442360016, guid: 4b142423fb86e114bb62e0476742e3e1,
     type: 2}
-  numberOfNPCs: 4
+  numberOfNPCs: 10
 --- !u!114 &160909414
 MonoBehaviour:
   m_ObjectHideFlags: 0
