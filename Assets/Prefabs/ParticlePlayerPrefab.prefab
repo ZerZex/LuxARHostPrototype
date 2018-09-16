@@ -673,7 +673,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   moveByGPS: 1
-  showDebug: 0
+  showDebug: 1
   bulletPrefab: {fileID: 1006856707282174, guid: cb72da8baac72413f9f460d51dd828eb,
     type: 2}
   bulletSpawn: {fileID: 4734822112083328}
