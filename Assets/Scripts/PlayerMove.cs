@@ -6,15 +6,15 @@ using UnityEngine.Networking;
 public class PlayerMove : NetworkBehaviour {
 
 	public float speed = 3.0f;   // units per second
-    public bool moveByGPS = true;  // True of GPS drives position, else use input
+    public bool moveByGPS = true;  // True of GPS drives position, else use keyboard/gyro input
     public bool showDebug = false;
 	public GameObject bulletPrefab;
 	public Transform bulletSpawn;
 
-	private Transform initialLocation;
-	private float journeyLength;
-
+	// Keep a reference to GPS->Game coordinate mapping object
     private ArenaMapper arena = null;
+
+	private double timeOrigin = -1.0f;  // Used to normalise time reporting for diagnostics
 
     // Use this for initialization
     void Start () {
@@ -164,8 +164,14 @@ public class PlayerMove : NetworkBehaviour {
         // Let's grab some GPS coordinates and dump them out
         if (Input.location.status == LocationServiceStatus.Running)
         {
+			// Initialise time origin - since GPS time is with respect to seconds since 1970 we get 
+			// big numbers that create noise.
+			if (timeOrigin < 0.0f) {
+				timeOrigin = Input.location.lastData.timestamp;
+			}
+
             string text = string.Format("GPS: {0}:({1},{2})",
-                                        Input.location.lastData.timestamp-1536895777.0f,
+                                        Input.location.lastData.timestamp - timeOrigin,
                                         Input.location.lastData.latitude,
                                         Input.location.lastData.longitude);
             GUI.Label(new Rect(10, 200, 400, 60), text);

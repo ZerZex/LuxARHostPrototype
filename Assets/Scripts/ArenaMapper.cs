@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+// This object is responsible for mapping GPS coordinates to game space.
+// GPS space is specified as a rectangle defined by the latitude and
+// longitude of two opposite corners. These are set up in the Unity
+// editor.
+// The game world space - the "arena" - is specified by the bounding box of the object
+// that this mapper is attached to. 
+// NOTE: see notes in GPStoArenaCoordinates on current assumptions in
+// the coordinate space mapping.
 public class ArenaMapper : NetworkBehaviour {
 
 	[SyncVar]
@@ -43,7 +51,7 @@ public class ArenaMapper : NetworkBehaviour {
 		//   1. Assumes lat/long box is same aspect ratio as arena geometry mesh
 		//   2. Assumes 1 degree of latitude is the same number of meters on the ground as
 		//      1 degree of longitude.
-		// But is OK for initial demo purposes is we ensure that the lat/long box limits are
+		// But is OK for initial demo purposes as long as we ensure that the lat/long box limits are
 		// more or less square.
 		// Once we've proved the rest of the mechansim, we can look at more exact maths - I
 		// have some notes on OneNote.
