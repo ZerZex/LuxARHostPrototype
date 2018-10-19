@@ -3,46 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerMove : NetworkBehaviour {
+public class PlayerMove : NetworkBehaviour
+{
 
-	public float speed = 3.0f;   // units per second
-    public bool moveByGPS = true;  // True of GPS drives position, else use keyboard/gyro input
+    public float speed = 3.0f;   // Walking units per second
+    public bool moveByGPS = true;  // True of GPS drives position, else use input
     public bool showDebug = false;
-	public GameObject bulletPrefab;
-	public Transform bulletSpawn;
+    public GameObject bulletPrefab;
+    public Transform bulletSpawn;
 
-	// Keep a reference to GPS->Game coordinate mapping object
+    private Transform initialLocation;
+    private float journeyLength;
+
     private ArenaMapper arena = null;
 
-	private double timeOrigin = -1.0f;  // Used to normalise time reporting for diagnostics
-
     // Use this for initialization
-    void Start () {
-		ResetMotion ();
+    void Start()
+    {
+        ResetMotion();
 
-        if (Application.isMobilePlatform)
+        // Might not be the best place to do this, but OK for now.
+        Input.location.Start(0.1f, 0.1f);   // Need best accuracy.
+
+        if (Input.location.status == LocationServiceStatus.Failed)
         {
-            // Might not be the best place to do this, but OK for now.
-            Input.location.Start(5, 2);   // Need best accuracy. Try (1,1)?
-
-            // Wait until service initializes
- /*           int maxWait = 20;
-            while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
-            {
-                yield return new WaitForSeconds(1);
-                maxWait--;
-            }
-            // Service didn't initialize in 20 seconds
-            if (maxWait < 1)
-            {
-                Debug.Log ("Timed out waiting for location services");
-            }
-*/
-            if (Input.location.status == LocationServiceStatus.Failed)
-            {
-                Debug.Log("Unable to start GPS tracker");
-            }
-
+            Debug.Log("Unable to start GPS tracker");
         }
 
         GameObject temp = GameObject.Find("Arena");
@@ -60,14 +45,16 @@ public class PlayerMove : NetworkBehaviour {
         }
     }
 
-	public void ResetMotion () {
-		// Call whenever goal position changes.
+    public void ResetMotion()
+    {
+        // Call whenever goal position changes.
 
-	}
+    }
 
     private void OnDestroy()
     {
-        if (Input.location.isEnabledByUser) {
+        if (Input.location.isEnabledByUser)
+        {
             Input.location.Stop();
             Debug.Log("GPS Stopped");
         }
@@ -75,8 +62,9 @@ public class PlayerMove : NetworkBehaviour {
 
 
     // Update is called once per frame
-    void Update () {
-		// Change position based on target location
+    void Update()
+    {
+        // Change position based on target location
         if (!isLocalPlayer)
         {
             return;
@@ -93,9 +81,6 @@ public class PlayerMove : NetworkBehaviour {
                                                                    Input.location.lastData.longitude);
                     // Temp - colour the player based on whether inside the arena or
                     // not in order to test out the GPS to Game coordinate mapping
-
-                    Debug.Log(string.Format("GPS: {0} ", Input.location.lastData.timestamp));
-
                     if (arena.IsInsideArena(worldpos))
                     {
                         SetColor(Color.cyan);
@@ -106,8 +91,13 @@ public class PlayerMove : NetworkBehaviour {
                     }
                     // Set position to mapped GPS location
                     // TODO: probably need some interpolation
-                    transform.position = worldpos;
-                    
+                    // transform.position = worldpos;
+
+                    // The step size is equal to speed times frame time.
+                    float step = speed * Time.deltaTime;
+                    // Move our position a step closer to the target.
+                    transform.position = Vector3.MoveTowards(transform.position, worldpos, step);
+
                 }
             }
             else
@@ -141,19 +131,21 @@ public class PlayerMove : NetworkBehaviour {
             transform.Rotate(0, x, 0);
             transform.Translate(0, 0, z);
 
-			if (Input.GetKeyDown(KeyCode.O)) {
-				Camera.main.fieldOfView *= 0.9f;
-			}
-			if (Input.GetKeyDown (KeyCode.P)) {
-				Camera.main.fieldOfView *= 1.1f;
-			}
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                Camera.main.fieldOfView *= 0.9f;
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                Camera.main.fieldOfView *= 1.1f;
+            }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 CmdFire();
             }
         }
-	}
+    }
 
     private void OnGUI()
     {
@@ -164,19 +156,13 @@ public class PlayerMove : NetworkBehaviour {
         // Let's grab some GPS coordinates and dump them out
         if (Input.location.status == LocationServiceStatus.Running)
         {
-			// Initialise time origin - since GPS time is with respect to seconds since 1970 we get 
-			// big numbers that create noise.
-			if (timeOrigin < 0.0f) {
-				timeOrigin = Input.location.lastData.timestamp;
-			}
-
-            string text = string.Format("GPS: {0}:({1},{2})",
-                                        Input.location.lastData.timestamp - timeOrigin,
+            string text = string.Format("GPS: {0}, {1}",
                                         Input.location.lastData.latitude,
                                         Input.location.lastData.longitude);
+
             GUI.Label(new Rect(10, 200, 400, 60), text);
             Debug.Log(text);
-            /*
+
             if (arena != null)
             {
                 Vector3 worldpos = arena.GPStoArenaCoordinates(Input.location.lastData.latitude,
@@ -197,7 +183,6 @@ public class PlayerMove : NetworkBehaviour {
                     GUI.Label(new Rect(10, 300, 400, 60), "Outside Arena!");
                 }
             }
-            */
         }
         else
         {
@@ -210,36 +195,39 @@ public class PlayerMove : NetworkBehaviour {
     {
         //base.OnStartLocalPlayer();
         SetColor(Color.blue);
-	}
+    }
 
-    public void SetColor (Color newcolor)
-	{
-		// Sets particle start colour
-		GameObject p = this.transform.Find("Player Flare").gameObject;
+    public void SetColor(Color newcolor)
+    {
+        // Sets particle start colour
+        GameObject p = this.transform.Find("Player Flare").gameObject;
 
-		if (p) {
-			ParticleSystem psys = p.GetComponent<ParticleSystem>();
+        if (p)
+        {
+            ParticleSystem psys = p.GetComponent<ParticleSystem>();
 
-			var main = psys.main;
-			main.startColor = newcolor;
-		} else {
-			Debug.LogError ("Unable to set colour - Flare object not found.");
-		}
-	}
+            var main = psys.main;
+            main.startColor = newcolor;
+        }
+        else
+        {
+            Debug.LogError("Unable to set colour - Flare object not found.");
+        }
+    }
 
     [Command]
-	void CmdFire ()
-	{
-		// Create the bullet from the Bullet Prefab
-		var bullet = (GameObject)Instantiate (bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+    void CmdFire()
+    {
+        // Create the bullet from the Bullet Prefab
+        var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
 
-		// Add some velocity
-		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+        // Add some velocity
+        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
 
         // Spawn the bullet on the clients
         NetworkServer.Spawn(bullet);
 
-		// Destroy after 2 seconds
-		Destroy(bullet, 2.0f);
-	}
+        // Destroy after 2 seconds
+        Destroy(bullet, 2.0f);
+    }
 }
